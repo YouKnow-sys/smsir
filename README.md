@@ -5,7 +5,7 @@ Python client for the [SMS.ir](https://sms.ir) REST API.
 ## Installation
 
 ```bash
-pip install smsir
+pip install smsir-sdk
 ```
 
 ## Requirements

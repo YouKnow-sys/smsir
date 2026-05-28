@@ -1,5 +1,5 @@
 [project]
-name = "smsir"
+name = "smsir-sdk"
 version = "1.0.0"
 description = "Python client for the SMS.ir REST API"
 readme = "README.md"
@@ -7,9 +7,17 @@ authors = [{ name = "saeid", email = "samani0019@gmail.com" }]
 requires-python = ">=3.12"
 dependencies = ["httpx>=0.28", "pydantic>=2.13"]
 
+[project.urls]
+Homepage = "https://github.com/Youknow-sys/smsir"
+Repository = "https://github.com/Youknow-sys/smsir"
+Issues = "https://github.com/Youknow-sys/smsir/issues"
+
 [build-system]
 requires = ["uv_build>=0.11.12,<0.12.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "smsir"
 
 [dependency-groups]
 dev = ["ruff>=0.15.15"]
