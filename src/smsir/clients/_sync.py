@@ -1,9 +1,7 @@
-from pydantic import BaseModel
-
 from ..endpoints import Endpoint
-from ..exceptions import APIError, AuthenticationError, RateLimitError
-from ..parser import parse_response
-from ..transports import Response, SyncTransport
+from ..parser import parse_data
+from ..transports import SyncTransport
+from ._common import check_api_status, raise_for_status
 
 
 class SMSIRClient:
@@ -20,7 +18,7 @@ class SMSIRClient:
             timeout=timeout,
         )
 
-    def execute[ResT: BaseModel](self, endpoint: Endpoint[ResT]) -> ResT:
+    def execute[DataT](self, endpoint: Endpoint[DataT]) -> DataT:
         response = self._transport.request(
             endpoint.method,
             endpoint.build_path(),
@@ -28,39 +26,12 @@ class SMSIRClient:
             params=endpoint.build_query_params(),
         )
 
-        self._raise_for_status(response)
+        raise_for_status(response)
 
-        data = response.json()
+        raw = response.json()
+        check_api_status(raw, response.status_code)
 
-        return parse_response(
-            data,
-            endpoint.response_model,
-        )
-
-    def _raise_for_status(self, response: Response):
-        if response.status_code == 401:
-            raise AuthenticationError(
-                "Authentication failed",
-                status_code=401,
-            )
-
-        if response.status_code == 429:
-            raise RateLimitError(
-                "Rate limited",
-                status_code=429,
-            )
-
-        if response.status_code >= 400:
-            try:
-                data = response.json()
-            except Exception:
-                data = None
-
-            raise APIError(
-                "API request failed",
-                status_code=response.status_code,
-                response=data,
-            )
+        return parse_data(raw["data"], endpoint.response_model)
 
     def close(self):
         self._transport.close()

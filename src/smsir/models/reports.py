@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
+from .status import DeliveryState
+
 
 class MessageRecord(BaseModel):
     message_id: int = Field(alias="messageId")
@@ -8,7 +10,7 @@ class MessageRecord(BaseModel):
     send_datetime: int = Field(alias="sendDateTime")
     line_number: int = Field(alias="lineNumber")
     cost: float = Field(alias="cost")
-    delivery_state: int | None = Field(alias="deliveryState")
+    delivery_state: DeliveryState | None = Field(alias="deliveryState")
     delivery_datetime: int | None = Field(alias="deliveryDateTime")
 
 

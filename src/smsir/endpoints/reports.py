@@ -2,14 +2,10 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from ..models import (
-    ArchiveReceiveResponse,
-    ArchiveSendResponse,
-    LatestReceiveResponse,
-    LiveReceiveResponse,
-    LiveSendResponse,
-    MessageReportResponse,
-    PackListResponse,
-    PackReportResponse,
+    MessageRecord,
+    PackSummary,
+    ReceivedMessage,
+    ReceivedMessageWithId,
 )
 from ..transports import HTTPMethod
 from ..utils import to_unix
@@ -17,25 +13,25 @@ from .base import Endpoint
 
 
 @dataclass(slots=True, kw_only=True)
-class MessageReport(Endpoint[MessageReportResponse]):
+class MessageReport(Endpoint[MessageRecord]):
     message_id: int
 
     method = HTTPMethod.GET
     path = "/send/{message_id}"
-    response_model = MessageReportResponse
+    response_model = MessageRecord
 
     def build_path(self):
         return self.path.format(message_id=self.message_id)
 
 
 @dataclass(slots=True, kw_only=True)
-class PackListReport(Endpoint[PackListResponse]):
+class PackListReport(Endpoint[list[PackSummary]]):
     page_size: int | None = None
     page_number: int | None = None
 
     method = HTTPMethod.GET
     path = "/send/pack"
-    response_model = PackListResponse
+    response_model = list[PackSummary]
 
     def build_query_params(self):
         params: dict[str, int] = {}
@@ -47,25 +43,25 @@ class PackListReport(Endpoint[PackListResponse]):
 
 
 @dataclass(slots=True, kw_only=True)
-class PackReport(Endpoint[PackReportResponse]):
+class PackReport(Endpoint[list[MessageRecord]]):
     pack_id: str
 
     method = HTTPMethod.GET
     path = "/send/pack/{pack_id}"
-    response_model = PackReportResponse
+    response_model = list[MessageRecord]
 
     def build_path(self):
         return self.path.format(pack_id=self.pack_id)
 
 
 @dataclass(slots=True, kw_only=True)
-class LiveSendReport(Endpoint[LiveSendResponse]):
+class LiveSendReport(Endpoint[list[MessageRecord]]):
     page_size: int | None = None
     page_number: int | None = None
 
     method = HTTPMethod.GET
     path = "/send/live"
-    response_model = LiveSendResponse
+    response_model = list[MessageRecord]
 
     def build_query_params(self):
         params: dict[str, int] = {}
@@ -77,7 +73,7 @@ class LiveSendReport(Endpoint[LiveSendResponse]):
 
 
 @dataclass(slots=True, kw_only=True)
-class ArchiveSendReport(Endpoint[ArchiveSendResponse]):
+class ArchiveSendReport(Endpoint[list[MessageRecord]]):
     from_date: datetime | None = None
     to_date: datetime | None = None
     page_size: int | None = None
@@ -85,7 +81,7 @@ class ArchiveSendReport(Endpoint[ArchiveSendResponse]):
 
     method = HTTPMethod.GET
     path = "/send/archive"
-    response_model = ArchiveSendResponse
+    response_model = list[MessageRecord]
 
     def build_query_params(self):
         params: dict[str, int] = {}
@@ -101,12 +97,12 @@ class ArchiveSendReport(Endpoint[ArchiveSendResponse]):
 
 
 @dataclass(slots=True, kw_only=True)
-class LatestReceive(Endpoint[LatestReceiveResponse]):
+class LatestReceive(Endpoint[list[ReceivedMessageWithId]]):
     count: int | None = None
 
     method = HTTPMethod.GET
     path = "/receive/latest"
-    response_model = LatestReceiveResponse
+    response_model = list[ReceivedMessageWithId]
 
     def build_query_params(self):
         if self.count is not None:
@@ -115,14 +111,14 @@ class LatestReceive(Endpoint[LatestReceiveResponse]):
 
 
 @dataclass(slots=True, kw_only=True)
-class LiveReceive(Endpoint[LiveReceiveResponse]):
+class LiveReceive(Endpoint[list[ReceivedMessage]]):
     page_size: int | None = None
     page_number: int | None = None
     sort_by_newest: bool | None = None
 
     method = HTTPMethod.GET
     path = "/receive/live"
-    response_model = LiveReceiveResponse
+    response_model = list[ReceivedMessage]
 
     def build_query_params(self):
         params: dict[str, int | bool] = {}
@@ -136,7 +132,7 @@ class LiveReceive(Endpoint[LiveReceiveResponse]):
 
 
 @dataclass(slots=True, kw_only=True)
-class ArchiveReceive(Endpoint[ArchiveReceiveResponse]):
+class ArchiveReceive(Endpoint[list[ReceivedMessageWithId]]):
     from_date: datetime | None = None
     to_date: datetime | None = None
     page_size: int | None = None
@@ -144,7 +140,7 @@ class ArchiveReceive(Endpoint[ArchiveReceiveResponse]):
 
     method = HTTPMethod.GET
     path = "/receive/archive"
-    response_model = ArchiveReceiveResponse
+    response_model = list[ReceivedMessageWithId]
 
     def build_query_params(self):
         params: dict[str, int] = {}

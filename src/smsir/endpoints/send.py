@@ -1,19 +1,14 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..models import (
-    BulkSendResponse,
-    CancelScheduledResponse,
-    SendByURLResponse,
-    VerifySendResponse,
-)
+from ..models import BulkSendData, CancelScheduledData, VerifySendData
 from ..transports import HTTPMethod
 from ..utils import to_unix
 from .base import Endpoint
 
 
 @dataclass(slots=True, kw_only=True)
-class BulkSend(Endpoint[BulkSendResponse]):
+class BulkSend(Endpoint[BulkSendData]):
     line_number: int
     message_text: str
     mobiles: list[str]
@@ -21,7 +16,7 @@ class BulkSend(Endpoint[BulkSendResponse]):
 
     method = HTTPMethod.POST
     path = "/send/bulk"
-    response_model = BulkSendResponse
+    response_model = BulkSendData
 
     def build_body(self):
         body = {
@@ -35,7 +30,7 @@ class BulkSend(Endpoint[BulkSendResponse]):
 
 
 @dataclass(slots=True, kw_only=True)
-class LikeToLikeSend(Endpoint[BulkSendResponse]):
+class LikeToLikeSend(Endpoint[BulkSendData]):
     line_number: int
     message_texts: list[str]
     mobiles: list[str]
@@ -43,7 +38,7 @@ class LikeToLikeSend(Endpoint[BulkSendResponse]):
 
     method = HTTPMethod.POST
     path = "/send/likeToLike"
-    response_model = BulkSendResponse
+    response_model = BulkSendData
 
     def build_body(self):
         body = {
@@ -57,14 +52,14 @@ class LikeToLikeSend(Endpoint[BulkSendResponse]):
 
 
 @dataclass(slots=True, kw_only=True)
-class VerifySend(Endpoint[VerifySendResponse]):
+class VerifySend(Endpoint[VerifySendData]):
     mobile: str
     template_id: int
     parameters: dict[str, str]
 
     method = HTTPMethod.POST
     path = "/send/verify"
-    response_model = VerifySendResponse
+    response_model = VerifySendData
 
     def build_body(self):
         return {
@@ -78,19 +73,19 @@ class VerifySend(Endpoint[VerifySendResponse]):
 
 
 @dataclass(slots=True, kw_only=True)
-class CancelScheduledSend(Endpoint[CancelScheduledResponse]):
+class CancelScheduledSend(Endpoint[CancelScheduledData]):
     pack_id: str
 
     method = HTTPMethod.DELETE
     path = "/send/scheduled/{pack_id}"
-    response_model = CancelScheduledResponse
+    response_model = CancelScheduledData
 
     def build_path(self):
         return self.path.format(pack_id=self.pack_id)
 
 
 @dataclass(slots=True, kw_only=True)
-class SendByURL(Endpoint[SendByURLResponse]):
+class SendByURL(Endpoint[VerifySendData]):
     username: str
     password: str
     line: int
@@ -99,7 +94,7 @@ class SendByURL(Endpoint[SendByURLResponse]):
 
     method = HTTPMethod.GET
     path = "/send"
-    response_model = SendByURLResponse
+    response_model = VerifySendData
 
     def build_query_params(self):
         return {

@@ -1,15 +1,13 @@
 from abc import ABC
 from typing import Any
 
-from pydantic import BaseModel
-
 from ..transports import HTTPMethod
 
 
-class Endpoint[ResT: BaseModel](ABC):
+class Endpoint[DataT](ABC):
     method: HTTPMethod
     path: str
-    response_model: type[ResT]
+    response_model: type[DataT]
 
     def build_body(self) -> dict[str, Any] | None:
         return None

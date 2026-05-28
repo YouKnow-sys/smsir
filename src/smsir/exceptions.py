@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from .models.status import StatusCode
+
+
 class SMSIRError(Exception):
     pass
 
@@ -12,10 +17,12 @@ class APIError(SMSIRError):
         message: str,
         *,
         status_code: int | None = None,
+        api_status: StatusCode | None = None,
         response: dict | None = None,
     ):
         self.message = message
         self.status_code = status_code
+        self.api_status = api_status
         self.response = response
 
         super().__init__(message)
@@ -23,11 +30,11 @@ class APIError(SMSIRError):
     def __str__(self) -> str:
         parts = [self.message]
 
-        if self.status_code is not None:
-            parts.append(f"status_code={self.status_code}")
+        if self.api_status is not None:
+            parts.append(f"api_status={self.api_status.name}({self.api_status.value})")
 
-        if self.response is not None:
-            parts.append(f"response={self.response}")
+        if self.status_code is not None:
+            parts.append(f"http_status={self.status_code}")
 
         return " | ".join(parts)
 
