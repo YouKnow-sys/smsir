@@ -1,11 +1,12 @@
 [project]
 name = "smsir-sdk"
-version = "1.0.0"
+version = "1.0.1"
 description = "Python client for the SMS.ir REST API"
 readme = "README.md"
 authors = [{ name = "saeid", email = "samani0019@gmail.com" }]
 requires-python = ">=3.12"
 dependencies = ["httpx>=0.28", "pydantic>=2.13"]
+license = { file = "LICENSE" }
 
 [project.urls]
 Homepage = "https://github.com/Youknow-sys/smsir"
